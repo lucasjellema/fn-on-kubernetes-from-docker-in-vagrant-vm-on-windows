@@ -1,0 +1,5 @@
+name: shipping-costs
+version: 0.0.4
+runtime: node
+entrypoint: node func.js
+format: json
