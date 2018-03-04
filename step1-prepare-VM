@@ -1,0 +1,55 @@
+######## kubectl
+
+# download and extract the kubectl binary 
+curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+
+# set the executable flag for kubectl
+chmod +x ./kubectl
+
+# move the kubectl executable to the bin directory
+sudo mv ./kubectl /usr/local/bin/kubectl
+
+# assuming that the kubeconfig file with details for Kubernetes cluster is available On the Windows Host:
+# Copy the kubeconfig file to the directory that contains the Vagrantfile and from which vagrant up and vagrant ssh were performed
+# note: this directory is mapped into the VM to directory /vagrant
+
+#Then in VM - set the proper Kubernetes configuration context: 
+export KUBECONFIG=/vagrant/kubeconfig
+
+#now inspect the succesful installation of kubectl and the correct connection to the Kubernetes cluster 
+kubectl cluster-info
+
+
+########  HELM
+#download the Helm installer
+curl -LO  https://kubernetes-helm.storage.googleapis.com/helm-v2.8.1-linux-amd64.tar.gz
+
+#extract the Helm executable from the archive
+tar -xzf helm-v2.8.1-linux-amd64.tar.gz
+
+#set the executable flag on the Helm executable
+sudo chmod +x  ./linux-amd64/helm
+
+#move the Helm executable to the bin directory - as helm
+sudo mv ./linux-amd64/helm /usr/local/bin/helm
+
+#test the successful installatin of helm
+helm version
+
+###### Tiller
+
+#Helm has a server side companion, called Tiller, that should be installed into the Kubernetes cluster
+# this is easily done by executing:
+helm init
+
+# an easy test of the Helm/Tiller set up can be run (as described in the quickstart guide)
+helm repo update              
+
+helm install stable/mysql
+
+helm list
+
+# now inspect in the Kubernetes Dashboard the Pod that should have been created for the MySQL Helm chart
+
+# clean up after yourself:
+helm delete <name of the release of MySQL>
