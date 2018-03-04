@@ -1,0 +1,33 @@
+# 1A. download and install Fn locally inside the VM
+curl -LSs https://raw.githubusercontent.com/fnproject/cli/master/install | sh
+
+#note: this previous statement failed for me; I went through the following steps as a workaround
+# 1B. create install script
+curl -LSs https://raw.githubusercontent.com/fnproject/cli/master/install > inst
+all.sh
+# make script executable
+chmod u+x install.sh
+# execute script - as sudo
+sudo ./install.sh
+
+# 1C. and if that fails, you can manually manipulate the downloaded executable:
+sudo mv /tmp/fn_linux /usr/local/bin/fn
+sudo chmod +x /usr/local/bin/fn
+
+# 2. when the installation was done through one of the  methods listed, test the success by running  
+fn --version
+
+
+# 3. Server side installation of Fn to the Kubernetes Cluster
+# details in https://github.com/fnproject/fn-helm
+
+# Clone the GitHub repo with the Helm chart for fn; sources are downloaded into the fn-helm directory
+git clone git@github.com:fnproject/fn-helm.git && cd fn-helm
+
+# Install chart dependencies from requirements.yaml in the fn-helm directory:
+helm dep build fn
+
+#To install the Helm chart with the release name my-release into Kubernetes:
+helm install --name my-release fn
+
+
