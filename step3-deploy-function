@@ -1,0 +1,22 @@
+export KUBECONFIG=/vagrant/kubeconfig
+
+# retrieve the name of the Pod running the Fn API
+kubectl get pods --namespace default -l "app=my-release-fn,role=fn-service" -o jsonpath="{.items[0].metadata.name}"
+
+# retrieve the name of the Pod running the Fn API and assign to environment variable POD_NAME
+export POD_NAME=$(kubectl get pods --namespace default -l "app=my-release-fn,role=fn-service" -o jsonpath="{.items[0].metadata.name}")
+echo $POD_NAME    
+
+
+# set up kubectl port-forwarding; this ensures that any local requests to port 8080 are forwarded by kubectl to the pod specified in this command, on port 80
+# this basically creates a shortcut or highway from the VM right into the heart of the K8S cluster; we can leverage this highway for deployment of the function
+kubectl port-forward --namespace default $POD_NAME 8080:80 &
+
+#now we inform Fn that deployment activities can be directed at port 8080 of the local host, effectively to the pod $POD_NAME on the K8S cluster
+export FN_API_URL=http://127.0.0.1:8080
+export FN_REGISTRY=lucasjellema
+docker login
+
+#perform the deployment of the function from the directory that contains the func.yaml file
+#functions are organized in applications; here the name of the application is set to soaring-clouds-app
+fn deploy --app soaring-clouds-app

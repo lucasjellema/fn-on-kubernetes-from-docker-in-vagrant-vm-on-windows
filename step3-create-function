@@ -1,0 +1,30 @@
+docker login
+
+export FN_REGISTRY=lucasjellema
+
+mkdir shipping-costs
+
+cd shipping-costs
+
+fn init --name shipping-costs --runtime  node
+
+# this creates the starting point of the Node application (package.json and func.js) as well as the Fn meta data file (func.yaml) 
+
+# now edit the func.js file (and add dependencies to package.json if necessary)
+
+#The extremely simple implementation of func.js looks like this:
+var fdk=require('@fnproject/fdk');
+
+fdk.handle(function(input){
+  var name = 'World';
+  if (input.name) {
+    name = input.name;
+  }
+  response = {'message': 'Hello ' + name, 'input':input}
+  return response
+})
+
+#This function receives an input parameter (from a POST request this would be the body contents, typically a JSON document)
+# the function returns a result, a JSON document with the message and the input document returned in its entirety
+
+ 

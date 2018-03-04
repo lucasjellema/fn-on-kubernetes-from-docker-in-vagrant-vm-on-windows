@@ -30,4 +30,8 @@ helm dep build fn
 #To install the Helm chart with the release name my-release into Kubernetes:
 helm install --name my-release fn
 
+# to verify the cluster server side installation you could run the following statements:
+export KUBECONFIG=/vagrant/kubeconfig
 
+#list all pods for app my-release-fn
+kubectl get pods --namespace default -l "app=my-release-fn"

@@ -1,0 +1,32 @@
+export KUBECONFIG=/vagrant/kubeconfig
+
+# retrieve the name of the Pod running the Fn API
+kubectl get pods --namespace default -l "app=my-release-fn,role=fn-service" -o jsonpath="{.items[0].metadata.name}"
+
+# retrieve the name of the Pod running the Fn API and assign to environment variable POD_NAME
+export POD_NAME=$(kubectl get pods --namespace default -l "app=my-release-fn,role=fn-service" -o jsonpath="{.items[0].metadata.name}")
+echo $POD_NAME    
+
+
+# set up kubectl port-forwarding; this ensures that any local requests to port 8080 are forwarded by kubectl to the pod specified in this command, on port 80
+# this basically creates a shortcut or highway from the VM right into the heart of the K8S cluster; we can leverage this highway for deployment of the function
+kubectl port-forward --namespace default $POD_NAME 8080:80 &
+
+
+curl -X POST \
+  http://127.0.0.1:8080/r/soaring-clouds-app/shipping-costs \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: bb753f9f-9f63-46b8-85c1-8a1428a2bdca' \
+  -d '{"X":"Y"}'
+
+
+
+# on the Windows laptop host
+set KUBECONFIG=c:\data\2018-soaring-keys\kubeconfig
+
+kubectl port-forward --namespace default <name of pod> 8080:80 &
+
+
+kubectl port-forward --namespace default my-release-fn-api-frsl5 8085:80 &
+
